@@ -32,17 +32,14 @@ const Orders: React.FC = () => {
 
   useEffect(() => {
     async function loadOrders(): Promise<void> {
-      const ordersApi = (await api.get('orders')).data;
+      const response = (await api.get('orders')).data;
 
-      ordersApi.forEach(order => { // eslint-disable-line
-        const totalExtras = order.extras.reduce((acc, extra) => {
-          return acc + extra.quantity * extra.value;
-        }, 0);
+      const parsedOrders = response.map((food: Food) => ({
+        ...food,
+        formattedPrice: formatValue(food.price),
+      }));
 
-        order.formattedPrice = formatValue(order.price + totalExtras); // eslint-disable-line
-      });
-
-      setOrders(ordersApi);
+      setOrders(parsedOrders);
     }
 
     loadOrders();
